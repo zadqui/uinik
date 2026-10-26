@@ -11,5 +11,5 @@ const featured=[];for(const feature of world.features.filter(f=>f.properties.nam
 for(const feature of featured)svg+=region(feature.geometry,names.get(feature.properties.name),'Presencia de UINIK');
 svg+='</svg>';
 await writeFile(new URL('../public/maps/presence.svg',import.meta.url),svg);
-const homeUrl=new URL('../index.html',import.meta.url);let home=await readFile(homeUrl,'utf8');home=home.replace(/(<figure class="presence-map"[^>]*>)<svg[\s\S]*?<\/svg>/,(_,open)=>open+svg);await writeFile(homeUrl,home);
+const homeUrl=new URL('../locales/es/index.html',import.meta.url);let home=await readFile(homeUrl,'utf8');home=home.replace(/(<figure class="presence-map"[^>]*>)<svg[\s\S]*?<\/svg>/,(_,open)=>open+svg);await writeFile(homeUrl,home);
 console.log('Mapa interactivo generado y actualizado en index.html.');

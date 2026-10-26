@@ -2,7 +2,7 @@
 
 Papel cálido, tinta carbón y naranja. Coolvetica para encabezados y DM Sans para lectura y controles, con mayúscula inicial y uso normal de minúsculas. Los títulos de las fichas de proyectos usan una serif para facilitar la lectura de títulos largos. Se conservan las ilustraciones y los iconos originales de Lucide.
 
-La portada es index.html; nosotros.html presenta la historia y el propósito, y participa.html contiene contacto y participación. La publicación copia las tres páginas validadas a dist, sin componentes React.
+La portada es index.html; nosotros.html presenta la historia y el propósito, y participa.html contiene contacto y participación. El inglés es el idioma inicial y es/ contiene las tres versiones españolas. Un selector EN / Español conserva la página y recuerda la elección. La publicación genera y valida las seis páginas desde locales/es y los diccionarios de traducción, sin componentes React.
 
 La portada sigue el orden: presentación, qué es UINIK, áreas, proyectos, comunidad, fotos de actividades, presencia internacional, aliados, participación, Discord y contacto. El catálogo tiene 46 proyectos con títulos y enfoques técnicos revisados, en fichas tipo paper con referencia interna, área, título, fase, equipo y resumen. Las fases y los equipos se muestran como datos ilustrativos y estimados, con una nota visible que explica su carácter. No se añaden autores, fechas ni identificadores de publicaciones inexistentes. Las fotografías quedan pendientes de recibir.
 

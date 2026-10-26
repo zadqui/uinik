@@ -1,14 +1,20 @@
 # UINIK
 
-Sitio editorial en español, escrito en un único archivo HTML con estilos, interacciones, Coolvetica e ilustraciones integrados. Los títulos se muestran en minúsculas. No requiere React ni dependencias de ejecución.
+Sitio editorial bilingüe, con inglés como idioma inicial y español disponible desde el selector. Usa HTML con estilos, interacciones, Coolvetica e ilustraciones integrados, sin React ni dependencias de ejecución.
 
 ## Desarrollo y publicación
 
 - Abrir index.html directamente en un navegador, o ejecutar npm run dev.
-- Ejecutar npm run build para validar el JavaScript y copiar index.html, nosotros.html y participa.html a dist.
+- Ejecutar npm run build para generar y validar las tres páginas en inglés y sus versiones en español dentro de dist/es, además de copiar la merch.
 - Ejecutar npm run preview para revisar dist en http://127.0.0.1:5173.
 - Se puede indicar otro puerto con -- --port 5179.
 - En Render: comando npm ci && npm run build; directorio de publicación dist.
+
+## Idiomas y edición
+
+El contenido fuente en español está en locales/es/index.html, locales/es/nosotros.html y locales/es/participa.html. Las traducciones están en scripts/translations.mjs y scripts/project-translations.mjs. scripts/localize.mjs genera las páginas inglesas en la raíz y las españolas en es/. No editar esas salidas directamente: npm run build las regenera desde las fuentes. El generador del mapa también actualiza la fuente en locales/es.
+
+La primera visita a la raíz usa inglés. El selector EN / Español aparece en las tres páginas, conserva la página, los parámetros del formulario y el ancla al cambiar de idioma, y guarda la preferencia en localStorage. Si el almacenamiento está deshabilitado, los enlaces de cada idioma siguen funcionando. Los textos estáticos, catálogo, mapa, diálogos, accesibilidad y estados del formulario tienen versiones en ambos idiomas.
 
 ## Contenido
 
