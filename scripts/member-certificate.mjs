@@ -133,57 +133,32 @@ export async function createMembershipPdf({ fullName, date, language = 'es' } = 
   loadScript('pdf-lib.min.js', 'PDFLib'),
   loadScript('fontkit.umd.min.js', 'fontkit'),
  ]);
- if (!sourcePromise) sourcePromise = Promise.all(['template.pdf', 'NotoSans-Regular.ttf', 'NotoSans-Bold.ttf'].map(fetchBytes)).catch(error => { sourcePromise = null; throw error; });
- const [template, regularBytes, boldBytes] = await sourcePromise;
+ if (!sourcePromise) sourcePromise = Promise.all(['template.pdf', 'NotoSans-Regular.ttf'].map(fetchBytes)).catch(error => { sourcePromise = null; throw error; });
+ const [template, regularBytes] = await sourcePromise;
  const pdf = await PDFLib.PDFDocument.load(template.slice());
  pdf.registerFontkit(fontkit);
- const [regular, bold] = await Promise.all([
-  pdf.embedFont(regularBytes, { subset: true }),
-  pdf.embedFont(boldBytes, { subset: true }),
- ]);
- requireGlyphs(bold, name);
+ const regular = await pdf.embedFont(regularBytes, { subset: true });
+ requireGlyphs(regular, name);
  const page = pdf.getPage(0);
  const width = page.getWidth();
  const left = 59.5, usable = width - left * 2;
- const ink = PDFLib.rgb(.10,.10,.09), orange = PDFLib.rgb(.76,.24,.09);
+ const ink = PDFLib.rgb(0,0,0);
  const top = 596, bottom = 245;
- let nameSize = 24;
- let nameLines;
+ const text = [content.intro,name,...content.paragraphs,content.closing].join(' ');
  let layout;
- for (; nameSize >= 14 && !layout; nameSize -= .5) {
-  nameLines = wrapText(name, bold, nameSize, usable);
-  if (nameLines.length > 3) continue;
-  for (let size = 12; size >= 11; size -= .25) {
-   const leading = size * 1.52;
-   const intro = wrapText(content.intro, regular, size, usable);
-   const paragraphs = content.paragraphs.map(p => wrapParagraph(p, content.emphasis, regular, bold, size, usable));
-   const closing = wrapText(content.closing, bold, size, usable);
-   const total = intro.length * leading + 13 + nameLines.length * nameSize * 1.25 + 15
-    + paragraphs.reduce((sum,p)=>sum+p.length*leading+13,0) + 4 + closing.length * leading;
-   if (total <= top - bottom) { layout = { size, leading, intro, paragraphs, closing, nameSize }; break; }
-  }
+ for (let size = 12; size >= 10.75; size -= .25) {
+  const leading=size*1.52,lines=wrapText(text,regular,size,usable);
+  if(lines.length*leading<=top-bottom){layout={size,leading,lines};break;}
  }
  if (!layout) throw fail('text-overflow', 'The certificate text does not fit this name.');
- nameSize = layout.nameSize;
  const drawLines = (lines, y, font, size, leading, color = ink) => {
   for (const line of lines) { page.drawText(line, { x:left, y, size, font, color }); y -= leading; }
   return y;
  };
  // Date is right-aligned above the existing orange rule; signatures remain untouched.
- let dateSize = 9.5;
- const dateWidth = 190;
- while (regular.widthOfTextAtSize(issued.display, dateSize) > dateWidth) dateSize -= .25;
+ const dateSize = layout.size;
  page.drawText(issued.display, { x:width-left-regular.widthOfTextAtSize(issued.display,dateSize), y:686, size:dateSize, font:regular, color:ink });
- let y = drawLines(layout.intro, top, regular, layout.size, layout.leading) - 13;
- y = drawLines(nameLines, y, bold, nameSize, nameSize * 1.25, orange) - 15;
- for (const lines of layout.paragraphs) {
-  for (const line of lines) {
-   for (const segment of line) page.drawText(segment.text, { x:left+segment.x, y, size:layout.size, font:segment.font, color:ink });
-   y -= layout.leading;
-  }
-  y -= 13;
- }
- y = drawLines(layout.closing, y - 4, bold, layout.size, layout.leading);
+ const y = drawLines(layout.lines, top, regular, layout.size, layout.leading);
  if (y < bottom - 1) throw fail('text-overflow', 'The certificate text exceeds its safe area.');
  pdf.setTitle(content.title);
  pdf.setSubject(content.title + ': ' + name);
