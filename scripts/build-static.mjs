@@ -1,0 +1,10 @@
+import { mkdir, copyFile, readFile } from 'node:fs/promises';
+import { Script } from 'node:vm';
+const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+if (!script) throw new Error('No se encontró el script de la página.');
+new Script(script, { filename: 'uinik-inline.js' });
+if (/@@[A-Z]+@@/.test(html)) throw new Error('Hay recursos pendientes.');
+await mkdir(new URL('../dist/', import.meta.url), { recursive: true });
+await copyFile(new URL('../index.html', import.meta.url), new URL('../dist/index.html', import.meta.url));
+console.log('UINIK: HTML validado y copiado a dist/index.html.');

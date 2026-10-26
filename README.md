@@ -1,34 +1,19 @@
 # UINIK
 
-Prototipo editorial en español construido con React, TypeScript y Vite. Incluye las siete secciones del encargo, collage original y formulario de demostración sin transmisión ni persistencia.
+Sitio editorial en español, escrito en un único archivo HTML con estilos, interacciones, Coolvetica e ilustraciones integrados. Los títulos se muestran en minúsculas. No requiere React ni dependencias de ejecución.
 
-## Ejecutar
+## Desarrollo y publicación
 
-```sh
-npm ci
-npm run dev
-```
+- Abrir index.html directamente en un navegador, o ejecutar npm run dev.
+- Ejecutar npm run build para validar el JavaScript y copiar index.html a dist/index.html.
+- Ejecutar npm run preview para revisar dist en http://127.0.0.1:5173.
+- Se puede indicar otro puerto con -- --port 5179.
+- En Render: comando npm ci && npm run build; directorio de publicación dist.
 
-Para revisar la versión de producción:
+## Contenido
 
-```sh
-npm run build
-npm run preview -- --port 5173
-```
+Catálogo con las 50 propuestas y 10 áreas del documento UINIK_50_Proyectos.docx proporcionado por el usuario. Incluye búsqueda sin distinción de acentos, filtro por área, carga progresiva y detalle de cada propuesta. Títulos, descripciones y cantidades de participantes son ficticios y se identifican como tales.
 
-## Verificación en navegador
+Los iconos originales de Lucide conservan su licencia en un comentario del HTML. La página respeta la preferencia del sistema para reducir movimiento. Los controles de participación son informativos y no recopilan ni transmiten datos.
 
-La prueba utiliza Chrome instalado y Playwright Core como herramienta opcional de desarrollo. No está incorporado a las dependencias de la aplicación:
-
-```sh
-npm install --no-save --package-lock=false playwright-core
-node scripts/verify-browser.mjs
-```
-
-Ejecutar con la vista previa en `http://127.0.0.1:5173`. El script admite `UINIK_QA_URL` y `UINIK_CHROME_PATH` para cambiar la dirección y el ejecutable. Genera capturas en `artifacts/`. Comprueba siete anchos, recortes tipográficos, menú, Escape, foco, filtros, desplegables, validación, ausencia de transmisión y almacenamiento, movimiento reducido y enlaces directos.
-
-## Estado
-
-Compilación y pruebas en Chrome aprobadas. No publicado. Los proyectos y conceptos de divulgación son ejemplos de demostración señalados en la página; se deben sustituir por contenidos revisados antes de una publicación oficial. El formulario no incorpora a nadie ni envía mensajes. No hay recursos visuales esenciales pendientes.
-
-Dirección y arquitectura: `DESIGN.md`. Registro de imágenes: `ASSETS_PENDING.md`.
+Las imágenes y Coolvetica están integradas en el HTML. DM Sans se solicita a Google Fonts y dispone de una alternativa local. Los archivos de marca aportados se conservan en la repo.
