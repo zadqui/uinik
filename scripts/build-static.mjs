@@ -1,4 +1,4 @@
-import { mkdir, copyFile, readFile } from 'node:fs/promises';
+import { mkdir, copyFile, readFile, cp } from 'node:fs/promises';
 import { Script } from 'node:vm';
 await mkdir(new URL('../dist/', import.meta.url), { recursive: true });
 for (const page of ['index.html', 'participa.html', 'nosotros.html']) {
@@ -9,4 +9,5 @@ for (const page of ['index.html', 'participa.html', 'nosotros.html']) {
  if (/@@[A-Z]+@@/.test(html)) throw new Error('Hay recursos pendientes en ' + page);
  await copyFile(new URL('../' + page, import.meta.url), new URL('../dist/' + page, import.meta.url));
 }
-console.log('UINIK: páginas validadas y copiadas a dist.');
+await cp(new URL('../public/merch/', import.meta.url), new URL('../dist/merch/', import.meta.url), { recursive: true });
+console.log('UINIK: páginas validadas y catálogo de merch copiados a dist.');
