@@ -2,3 +2,5 @@ node_modules/
 dist/
 *.local
 artifacts/
+tmp/pdfs/
+output/pdf/

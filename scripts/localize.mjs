@@ -1,10 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { copy } from './translations.mjs';
 import { categories, projects } from './project-translations.mjs';
+import { membershipCopy } from './membership-translations.mjs';
 
-const pages=['index.html','nosotros.html','participa.html'];
+const pages=['index.html','nosotros.html','participa.html','afiliados.html'];
 const spacing={' personas':' people',' de ':' of ',' propuestas':' projects',' (abre en otra pestaña)':' (opens in a new tab)',' con el logo de UINIK sobre fondo naranja':' with the UINIK logo on an orange background'};
-const dictionary=copy.filter(([key])=>key!=='de').map(([key,value])=>[key,spacing[key]??value]).sort((a,b)=>b[0].length-a[0].length);
+const dictionary=[...copy,...membershipCopy].filter(([key])=>key!=='de').map(([key,value])=>[key,spacing[key]??value]).sort((a,b)=>b[0].length-a[0].length);
 function translate(html){
  const assets=[];
  html=html.replace(/data:[^\s"']+/g,value=>`__ASSET_${assets.push(value)-1}__`);
