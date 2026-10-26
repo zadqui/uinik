@@ -1,7 +1,7 @@
 import { mkdir, copyFile, readFile } from 'node:fs/promises';
 import { Script } from 'node:vm';
 await mkdir(new URL('../dist/', import.meta.url), { recursive: true });
-for (const page of ['index.html', 'participa.html']) {
+for (const page of ['index.html', 'participa.html', 'nosotros.html']) {
  const html = await readFile(new URL('../' + page, import.meta.url), 'utf8');
  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
  if (!scripts.length) throw new Error('No se encontró el script de ' + page);
