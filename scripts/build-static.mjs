@@ -1,10 +1,12 @@
 import { mkdir, copyFile, readFile } from 'node:fs/promises';
 import { Script } from 'node:vm';
-const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
-if (!script) throw new Error('No se encontró el script de la página.');
-new Script(script, { filename: 'uinik-inline.js' });
-if (/@@[A-Z]+@@/.test(html)) throw new Error('Hay recursos pendientes.');
 await mkdir(new URL('../dist/', import.meta.url), { recursive: true });
-await copyFile(new URL('../index.html', import.meta.url), new URL('../dist/index.html', import.meta.url));
-console.log('UINIK: HTML validado y copiado a dist/index.html.');
+for (const page of ['index.html', 'participa.html']) {
+ const html = await readFile(new URL('../' + page, import.meta.url), 'utf8');
+ const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+ if (!scripts.length) throw new Error('No se encontró el script de ' + page);
+ for (const [, script] of scripts) new Script(script, { filename: page + '.js' });
+ if (/@@[A-Z]+@@/.test(html)) throw new Error('Hay recursos pendientes en ' + page);
+ await copyFile(new URL('../' + page, import.meta.url), new URL('../dist/' + page, import.meta.url));
+}
+console.log('UINIK: páginas validadas y copiadas a dist.');
