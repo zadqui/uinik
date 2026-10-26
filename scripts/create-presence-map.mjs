@@ -1,41 +1,20 @@
 import { readFile, writeFile } from 'node:fs/promises';
-
-// Source boundaries: johan/world.geo.json and angelnmara/geojson.
-const world = JSON.parse(await readFile(new URL('../public/maps/world.geojson', import.meta.url), 'utf8'));
-const mexico = JSON.parse(await readFile(new URL('../public/maps/mexico.geojson', import.meta.url), 'utf8'));
-const yucatan = mexico.features.find(f => f.properties.id === 'MX-YUC');
-const project = ([lon, lat]) => [550 + lon * 2.85, 45 + (85 - lat) * 2.85];
-const inset = ([lon, lat]) => [830 + (lon + 118) * 6.2, 414 + (33 - lat) * 6.2];
-const escape = text => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
-function path(geometry, projection = project) {
- const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
- return polygons.map(polygon => polygon.map(ring => ring.map((p, i) => (i ? 'L' : 'M') + projection(p).map(n => n.toFixed(1)).join(',')).join('') + 'Z').join('')).join('');
-}
-const highlighted = new Set(['Mexico', 'Spain', 'Argentina', 'Colombia']);
-let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 570" role="img" aria-labelledby="world-map-title world-map-description"><title id="world-map-title">Nuestra presencia en el mundo</title><desc id="world-map-description">México, España, Londres en Reino Unido, Argentina y Colombia. México se muestra en naranja y Yucatán en naranja intenso, también en una ampliación de México.</desc><style>.land{fill:#cfc6b5;stroke:#f5efe4;stroke-width:.65;stroke-linejoin:round}.presence-country{fill:#e85b3b}.yucatan{fill:#a32c19;stroke:#fff4df;stroke-width:1}.map-label{font:600 16px Arial,sans-serif;fill:#292722;paint-order:stroke;stroke:#f5efe4;stroke-width:5;stroke-linejoin:round}.map-line{fill:none;stroke:#7a5a49;stroke-width:1.2}.pin{fill:#a32c19;stroke:#fff4df;stroke-width:2}.inset-label{font:600 13px Arial,sans-serif;fill:#50483c}</style><rect x="0" y="0" width="1100" height="570" rx="8" fill="#f5efe4"/>`;
-for (const lat of [-30, 0, 30, 60]) {
- const y = project([0, lat])[1];
- svg += `<path d="M30 ${y}H1070" stroke="#ded6c7" stroke-dasharray="3 7"/>`;
-}
-for (const f of world.features.filter(f => f.properties.name !== 'Antarctica')) {
- svg += `<path class="land${highlighted.has(f.properties.name) ? ' presence-country' : ''}" d="${path(f.geometry)}"><title>${escape(f.properties.name)}</title></path>`;
-}
-svg += `<path class="yucatan" d="${path(yucatan.geometry)}"><title>Yucatán</title></path>`;
-const places = [
- ['México', [-102, 24], [-138, 14]],
- ['Yucatán', [-89, 20.8], [-74, 5]],
- ['España', [-3.7, 40.4], [-31, 32]],
- ['Londres', [-.1276, 51.5072], [10, 65]],
- ['Colombia', [-73, 4], [-111, -10]],
- ['Argentina', [-64, -35], [-96, -47]],
-];
-for (const [name, coords, label] of places) {
- const [x,y] = project(coords), [lx,ly] = project(label);
- svg += `<g><path class="map-line" d="M${x} ${y}L${lx} ${ly - 6}"/><circle class="pin" cx="${x}" cy="${y}" r="4.5"/><text class="map-label" x="${lx}" y="${ly}">${name}</text></g>`;
-}
-svg += `<rect x="806" y="390" width="270" height="165" rx="6" fill="#eee7da" stroke="#b5aa97"/><text class="inset-label" x="822" y="412">México · Detalle de Yucatán</text>`;
-for (const f of mexico.features) svg += `<path class="land ${f.properties.id === 'MX-YUC' ? 'yucatan' : 'presence-country'}" d="${path(f.geometry, inset)}"/>`;
-const [yx,yy] = inset([-89,20.8]);
-svg += `<path class="map-line" d="M${yx} ${yy}L1015 540"/><text class="inset-label" x="965" y="547">Yucatán</text></svg>`;
-await writeFile(new URL('../public/maps/presence.svg', import.meta.url), svg);
-console.log('Mapa de presencia generado con límites de países y de Yucatán.');
+const world=JSON.parse(await readFile(new URL('../public/maps/world.geojson',import.meta.url),'utf8'));
+const mexico=JSON.parse(await readFile(new URL('../public/maps/mexico.geojson',import.meta.url),'utf8'));
+const project=([lon,lat])=>[550+lon*2.85,35+(85-lat)*2.85];
+const inset=([lon,lat])=>[820+(lon+118)*7,407+(33-lat)*7];
+const escape=text=>text.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
+function path(geometry,projection=project){const polygons=geometry.type==='Polygon'?[geometry.coordinates]:geometry.coordinates;return polygons.map(polygon=>polygon.map(ring=>ring.map((p,i)=>(i?'L':'M')+projection(p).map(n=>n.toFixed(1)).join(',')).join('')+'Z').join('')).join('');}
+const names=new Map([['Mexico','México'],['Spain','España'],['United Kingdom','Reino Unido'],['Argentina','Argentina'],['Colombia','Colombia']]);
+function region(geometry,name,detail,extra='',projection=project){const d=path(geometry,projection);return `<g class="map-region ${extra}" tabindex="0" role="button" aria-label="${escape(name)}: ${escape(detail)}" aria-pressed="false" data-map-place="${escape(name)}" data-map-detail="${escape(detail)}"><path class="region-hit" d="${d}"/><path class="region-shape" d="${d}"/><title>${escape(name)}</title></g>`;}
+let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 570" role="group" aria-labelledby="world-map-title world-map-description"><title id="world-map-title">Nuestra presencia en el mundo</title><desc id="world-map-description">Explora México, Reino Unido, España, Argentina y Colombia. Pasa el cursor, toca o usa el teclado para conocer cada lugar. La ampliación de México permite explorar sus estados, con Yucatán destacado.</desc><style>.map-ocean{fill:#f5efe4}.land{fill:#d8d0c1;stroke:#f5efe4;stroke-width:.7;stroke-linejoin:round}.region-hit{fill:transparent;stroke:transparent;stroke-width:3;pointer-events:all}.region-shape{fill:#e85b3b;stroke:#fff4df;stroke-width:.85;stroke-linejoin:round;pointer-events:none;transform-box:fill-box;transform-origin:center;transition:transform .2s ease,filter .2s ease,fill .2s ease}.map-region{cursor:pointer;outline:none}.map-region.is-active .region-shape,.map-region:hover .region-shape,.map-region:focus-visible .region-shape{fill:#ed744f;transform:translateY(-6px) scale(1.025);filter:drop-shadow(0 7px 3px #5d352a66)}.map-region:focus-visible .region-shape{stroke:#191916;stroke-width:2}.map-state .region-shape{fill:#ebb399;stroke:#f8efe1;stroke-width:.75}.map-yucatan .region-shape{fill:#a32c19}.map-yucatan.is-active .region-shape,.map-yucatan:hover .region-shape,.map-yucatan:focus-visible .region-shape{fill:#84210f}.map-inset-label{font:600 14px Arial,sans-serif;fill:#5b5143;pointer-events:none}@media(prefers-reduced-motion:reduce){.region-shape{transition:none;transform:none!important}}</style><rect class="map-ocean" width="1100" height="570" rx="8"/>`;
+for(const lat of [-30,0,30,60])svg+=`<path d="M30 ${project([0,lat])[1]}H1070" stroke="#e8e0d3" stroke-dasharray="2 8"/>`;
+const featured=[];for(const feature of world.features.filter(f=>f.properties.name!=='Antarctica')){if(names.has(feature.properties.name))featured.push(feature);else svg+=`<path class="land" d="${path(feature.geometry)}"/>`;}
+for(const feature of featured)svg+=region(feature.geometry,names.get(feature.properties.name),'Presencia de UINIK');
+const yucatan=mexico.features.find(f=>f.properties.id==='MX-YUC');svg+=region(yucatan.geometry,'Yucatán','México · Estado destacado','map-yucatan');
+svg+='<rect x="795" y="374" width="288" height="182" rx="8" fill="#eee7da" stroke="#c5baa7"/><text class="map-inset-label" x="813" y="397">México · Explora sus estados</text>';
+for(const feature of mexico.features.filter(f=>f!==yucatan))svg+=region(feature.geometry,feature.properties.name,'México · Entidad federativa','map-state',inset);
+svg+=region(yucatan.geometry,'Yucatán','México · Estado destacado','map-state map-yucatan',inset);svg+='</svg>';
+await writeFile(new URL('../public/maps/presence.svg',import.meta.url),svg);
+const homeUrl=new URL('../index.html',import.meta.url);let home=await readFile(homeUrl,'utf8');home=home.replace(/(<figure class="presence-map"[^>]*>)<svg[\s\S]*?<\/svg>/,(_,open)=>open+svg);await writeFile(homeUrl,home);
+console.log('Mapa interactivo generado y actualizado en index.html.');
