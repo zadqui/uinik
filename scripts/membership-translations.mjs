@@ -1,4 +1,10 @@
 export const membershipCopy = [
+['Acceso mediante invitación personalizada. Revisa el nombre incluido en tu enlace antes de aceptar el acuerdo.','Access through a personalized invitation. Review the name included in your link before accepting the agreement.'],
+['Para continuar, abre el enlace personalizado que recibiste de UINIK.','To continue, open the personalized link you received from UINIK.'],
+['Para continuar, abre el enlace personalizado que recibiste de UINIK. Si el enlace no incluye tu nombre correctamente, solicita una nueva invitación.','To continue, open the personalized link you received from UINIK. If the link does not include your name correctly, request a new invitation.'],
+['Fecha de incorporación','Membership date'],
+['La fecha de incorporación cambió. Revisa tus datos y vuelve a aceptar el acuerdo.','The membership date has changed. Review your details and accept the agreement again.'],
+['La constancia se genera en tu navegador. El nombre forma parte del enlace de invitación; esta página no crea un registro central de aceptación.','The certificate is generated in your browser. Your name is part of the invitation link; this page does not create a central record of acceptance.'],
 ['Afiliados','Members'],
 ['¿Ya eres parte de UINIK?','Already part of UINIK?'],
 ['Formaliza tu participación, conoce el acuerdo de colaboración y descarga tu constancia personalizada.','Make your participation official, read the collaboration agreement, and download your personalized certificate.'],

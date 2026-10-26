@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#191916">
-<meta name="robots" content="noindex, nofollow, noarchive"><meta name="description" content="Formalize your participation in UINIK: read the agreement, confirm your full name, and download your personalized certificate.">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex, nofollow, noarchive"><meta name="description" content="Formalize your participation in UINIK: read the agreement, confirm your full name, and download your personalized certificate.">
 <title>Members and associates — UINIK</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -32,15 +32,15 @@
 <section aria-labelledby="term-6"><h3 id="term-6">6. Ethics and collaboration</h3><p>Members commit to acting honestly, respecting their collaborators, acknowledging others’ contributions, and communicating responsibly.</p><p>Failure to meet commitments may lead to a review of participation or support provided, in accordance with the applicable agreements.</p></section>
 </article>
 <form class="membership-form" id="membership-form" novalidate>
-<h2>Your membership certificate</h2><p class="lead">This is how your name will appear on the document. Review it before continuing.</p>
+<h2>Your membership certificate</h2><p class="hint" style="margin-bottom:18px">Access through a personalized invitation. Review the name included in your link before accepting the agreement.</p><p class="lead">This is how your name will appear on the document. Review it before continuing.</p>
 <label for="full-name">Full name *</label><input id="full-name" name="fullName" type="text" autocomplete="name" maxlength="360" required aria-describedby="name-help" placeholder="Enter your full name">
 <p class="hint" id="name-help">Enter your name exactly as you want it to appear, including any accents. It must be between 3 and 180 characters.</p>
-<dl class="review" aria-label="Certificate details"><div><dt>Name on the certificate</dt><dd id="name-preview">Your full name</dd></div><div><dt>Issue date</dt><dd><time id="date-preview"></time></dd></div></dl>
+<dl class="review" aria-label="Certificate details"><div><dt>Name on the certificate</dt><dd id="name-preview">Your full name</dd></div><div><dt>Membership date</dt><dd><time id="date-preview"></time></dd></div></dl>
 <label class="acceptance" for="accept-agreement"><input id="accept-agreement" name="acceptAgreement" type="checkbox" required><span>I have read and accept all UINIK participation and responsible resource use terms.</span></label>
 <div class="actions"><button id="generate-certificate" type="submit" disabled>Generate my certificate <span aria-hidden="true"><img class="ui-arrow" src="/icons/arrow-down.svg" alt="" aria-hidden="true" width="20" height="20"></span></button></div>
 <p id="generation-status" class="status" role="status" aria-live="polite" hidden></p>
 <div id="download-result" class="download-result" hidden><p>Your certificate is ready. Download the PDF and keep a copy.</p><a id="download-certificate" class="button" href="#download-result" download>Download PDF certificate <span aria-hidden="true"><img class="ui-arrow" src="/icons/arrow-down.svg" alt="" aria-hidden="true" width="20" height="20"></span></a></div>
-<p class="privacy-note">Your name and acceptance are used only in this browser to generate the certificate. This page does not send or store these details in a UINIK register.</p>
+<p class="privacy-note">The certificate is generated in your browser. Your name is part of the invitation link; this page does not create a central record of acceptance.</p>
 <noscript><p class="hint">Enable JavaScript to generate your personalized certificate.</p></noscript>
 </form>
 </div>
@@ -49,6 +49,9 @@
 <script>
 const membershipForm=document.querySelector('#membership-form');
 const fullNameInput=document.querySelector('#full-name');
+const invitationParams=new URLSearchParams(location.search);
+const invitationName=invitationParams.get('nombre');
+let invitationValid=false;
 const consentInput=document.querySelector('#accept-agreement');
 const generateButton=document.querySelector('#generate-certificate');
 const namePreview=document.querySelector('#name-preview');
@@ -66,7 +69,7 @@ displayDate();
 function normalizedName(){return fullNameInput.value.normalize('NFC').trim().replace(/\s+/g,' ');}
 function validName(value){const length=[...value].length;return length>=3&&length<=180&&/\p{L}/u.test(value)&&!/[\p{Cc}\p{Cf}]/u.test(value);}
 function clearCertificate(){if(certificateUrl){URL.revokeObjectURL(certificateUrl);certificateUrl=null;}downloadResult.hidden=true;downloadLink.removeAttribute('href');}
-function updateAvailability(){generateButton.disabled=busy||!validName(normalizedName())||!consentInput.checked;}
+function updateAvailability(){generateButton.disabled=busy||!invitationValid||!validName(normalizedName())||!consentInput.checked;}
 function setStatus(message,state){generationStatus.textContent=message;generationStatus.dataset.state=state;generationStatus.hidden=false;}
 function invalidate(){nameRevision++;consentInput.checked=false;clearCertificate();generationStatus.hidden=true;namePreview.textContent=normalizedName()||'Your full name';updateAvailability();}
 fullNameInput.addEventListener('input',invalidate);
@@ -74,8 +77,9 @@ consentInput.addEventListener('change',()=>{clearCertificate();generationStatus.
 function loadPdfLibrary(){if(globalThis.PDFLib)return Promise.resolve();if(pdfLibraryPromise)return pdfLibraryPromise;pdfLibraryPromise=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/membership/pdf-lib.min.js';script.onload=()=>{if(globalThis.PDFLib)resolve();else{pdfLibraryPromise=null;script.remove();reject(new Error('library'));}};script.onerror=()=>{pdfLibraryPromise=null;script.remove();reject(new Error('library'));};document.head.append(script);});return pdfLibraryPromise;}
 membershipForm.addEventListener('submit',async event=>{
  event.preventDefault();if(busy)return;
+ if(!invitationValid){setStatus('To continue, open the personalized link you received from UINIK.','error');return;}
  const name=normalizedName();if(!validName(name)){fullNameInput.focus();setStatus('Enter your full name to continue.','error');return;}if(!consentInput.checked){consentInput.focus();setStatus('Read and accept the agreement before generating your certificate.','error');return;}
- const currentDate=mexicoDate();if(currentDate!==issueDate){issueDate=currentDate;displayDate();invalidate();setStatus('The issue date has changed. Review your details and accept the agreement again.','error');return;}
+ const currentDate=mexicoDate();if(currentDate!==issueDate){issueDate=currentDate;displayDate();invalidate();setStatus('The membership date has changed. Review your details and accept the agreement again.','error');return;}
  clearCertificate();const revision=nameRevision;busy=true;updateAvailability();generateButton.textContent='Generating your certificate…';setStatus('We are preparing your personalized PDF.','pending');
  try{
   await loadPdfLibrary();const {createMembershipPdf}=await import('/membership/member-certificate.mjs');const bytes=await createMembershipPdf({fullName:name,date:issueDate,language:certificateLanguage});
@@ -85,6 +89,11 @@ membershipForm.addEventListener('submit',async event=>{
  finally{busy=false;generateButton.innerHTML='Generate my certificate <span aria-hidden="true"><img class="ui-arrow" src="/icons/arrow-down.svg" alt="" aria-hidden="true" width="20" height="20"></span>';updateAvailability();}
 });
 addEventListener('pagehide',()=>{if(certificateUrl)URL.revokeObjectURL(certificateUrl);});
+if(invitationName!==null){
+ const candidate=invitationName.normalize('NFC').trim().replace(/\s+/g,' ');
+ if(validName(candidate)){invitationValid=true;fullNameInput.value=candidate;fullNameInput.dispatchEvent(new Event('input',{bubbles:true}));}
+}
+if(!invitationValid){fullNameInput.disabled=true;consentInput.disabled=true;setStatus('To continue, open the personalized link you received from UINIK. If the link does not include your name correctly, request a new invitation.','error');}
 updateAvailability();
 </script>
 </body></html>

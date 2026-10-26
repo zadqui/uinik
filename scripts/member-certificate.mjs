@@ -5,28 +5,32 @@ let sourcePromise;
 
 const copy = {
  es: {
-  intro: 'Por medio de la presente, UINIK reconoce formalmente a',
+  intro: 'Por medio de la presente, UINIK, organización académica multidisciplinaria sin fines de lucro, hace constar la incorporación de',
+  joining: 'quien, a partir del día {date}, pasa a formar parte de nuestra organización, participando en las actividades, proyectos e iniciativas relacionadas con la investigación científica, el desarrollo tecnológico, la innovación y la divulgación del conocimiento.',
   paragraphs: [
-   'como integrante de nuestra organización, en reconocimiento a su compromiso de contribuir al desarrollo del conocimiento, la investigación científica, la innovación tecnológica y la divulgación.',
-   'Su incorporación representa la suma de nuevas ideas, capacidades y perspectivas a una comunidad que reconoce en la colaboración humana el origen de todo avance significativo.',
-   'Con este reconocimiento, damos constancia de su integración a UINIK y de su participación en una visión compartida: construir conocimiento, impulsar iniciativas y acercar la ciencia a la sociedad.',
+   'El integrante asume el compromiso de participar responsablemente en los proyectos y actividades que acepte desarrollar, cumpliendo con los objetivos, responsabilidades y acuerdos establecidos en colaboración con los demás miembros de la organización.',
+   'Asimismo, durante su participación, podrá acceder a los recursos, apoyos, herramientas y oportunidades que UINIK ponga a su disposición, conforme a las necesidades de cada proyecto y las condiciones previamente acordadas. Dichos recursos deberán utilizarse exclusivamente para los fines autorizados y, cuando corresponda, comprobarse su correcta aplicación.',
+   'UINIK reconoce y respeta la autoría y propiedad intelectual de los proyectos desarrollados por sus integrantes, sin adquirir derechos sobre ellos por el simple hecho de brindar apoyo institucional. Por su parte, el integrante deberá reconocer la participación de UINIK en los créditos y publicaciones de aquellos proyectos que se desarrollen con su respaldo o dentro de la organización.',
+   'La presente constancia tiene como finalidad formalizar la incorporación del integrante a UINIK, así como dejar constancia de su aceptación de los principios de responsabilidad, colaboración, ética y respeto que rigen las actividades de la organización.',
+   'Este documento no constituye por sí mismo un contrato de trabajo ni establece obligaciones de remuneración. La naturaleza de la relación entre las partes se determinará conforme a las actividades efectivamente realizadas y la legislación aplicable.',
   ],
-  closing: 'Porque los grandes avances no son el resultado de una sola persona, sino de quienes deciden construirlos juntos.',
+  closing: 'Se expide la presente constancia para los fines que al interesado convengan.',
   dateLocale: 'es-MX',
   title: 'Constancia de integración a UINIK',
-  emphasis: 'integrante de nuestra organización',
  },
  en: {
-  intro: 'UINIK hereby formally recognizes',
+  intro: 'UINIK, a nonprofit multidisciplinary academic organization, hereby certifies the admission of',
+  joining: 'who, as of {date}, becomes a member of our organization, participating in activities, projects, and initiatives related to scientific research, technological development, innovation, and the dissemination of knowledge.',
   paragraphs: [
-   'as a member of our organization, in recognition of their commitment to advancing knowledge, scientific research, technological innovation, and science communication.',
-   'Their membership brings new ideas, skills, and perspectives to a community that recognizes human collaboration as the origin of every significant advance.',
-   'Through this recognition, we attest to their membership in UINIK and their participation in a shared vision: to build knowledge, support initiatives, and bring science closer to society.',
+   'The member commits to participating responsibly in the projects and activities they agree to undertake, fulfilling the objectives, responsibilities, and agreements established in collaboration with the other members of the organization.',
+   'During their participation, the member may also access the resources, support, tools, and opportunities that UINIK makes available, according to the needs of each project and the conditions previously agreed upon. These resources must be used exclusively for authorized purposes and, where applicable, their proper use must be documented.',
+   'UINIK recognizes and respects the authorship and intellectual property of projects developed by its members, without acquiring rights to them merely by providing institutional support. In turn, the member must acknowledge UINIK’s participation in the credits and publications of projects developed with its support or within the organization.',
+   'This certificate is intended to formalize the member’s admission to UINIK and to record their acceptance of the principles of responsibility, collaboration, ethics, and respect that govern the organization’s activities.',
+   'This document does not in itself constitute an employment contract or establish any obligation to provide remuneration. The nature of the relationship between the parties will be determined according to the activities actually performed and the applicable law.',
   ],
-  closing: 'Because great advances are not the result of one person, but of those who choose to build them together.',
+  closing: 'This certificate is issued for any purposes the interested party may deem appropriate.',
   dateLocale: 'en-US',
   title: 'UINIK membership recognition',
-  emphasis: 'a member of our organization',
  },
 };
 
@@ -144,10 +148,10 @@ export async function createMembershipPdf({ fullName, date, language = 'es' } = 
  const left = 59.5, usable = width - left * 2;
  const ink = PDFLib.rgb(0,0,0);
  const top = 596, bottom = 245;
- const text = [content.intro,name,...content.paragraphs,content.closing].join(' ');
+ const text = [content.intro,name+',',content.joining.replace('{date}',issued.display),...content.paragraphs,content.closing].join(' ');
  let layout;
- for (let size = 12; size >= 10.75; size -= .25) {
-  const leading=size*1.52,lines=wrapText(text,regular,size,usable);
+ for (let size = 12; size >= 9.5; size -= .25) {
+  const leading=size*1.35,lines=wrapText(text,regular,size,usable);
   if(lines.length*leading<=top-bottom){layout={size,leading,lines};break;}
  }
  if (!layout) throw fail('text-overflow', 'The certificate text does not fit this name.');

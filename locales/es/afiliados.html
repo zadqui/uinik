@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#191916">
-<meta name="robots" content="noindex, nofollow, noarchive"><meta name="description" content="Formaliza tu participación en UINIK: lee el acuerdo, confirma tu nombre completo y descarga tu constancia personalizada.">
+<meta name="referrer" content="no-referrer"><meta name="robots" content="noindex, nofollow, noarchive"><meta name="description" content="Formaliza tu participación en UINIK: lee el acuerdo, confirma tu nombre completo y descarga tu constancia personalizada.">
 <title>Afiliados y asociados — UINIK</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -28,15 +28,15 @@
 <section aria-labelledby="term-6"><h3 id="term-6">6. Ética y colaboración</h3><p>Los integrantes se comprometen a actuar con honestidad, respetar a sus colaboradores, reconocer las contribuciones ajenas y mantener una comunicación responsable.</p><p>El incumplimiento de los compromisos podrá motivar una revisión de la participación o de los apoyos otorgados, conforme a los acuerdos aplicables.</p></section>
 </article>
 <form class="membership-form" id="membership-form" novalidate>
-<h2>Tu constancia de integración</h2><p class="lead">Así aparecerá tu nombre en el documento. Revísalo antes de continuar.</p>
+<h2>Tu constancia de integración</h2><p class="hint" style="margin-bottom:18px">Acceso mediante invitación personalizada. Revisa el nombre incluido en tu enlace antes de aceptar el acuerdo.</p><p class="lead">Así aparecerá tu nombre en el documento. Revísalo antes de continuar.</p>
 <label for="full-name">Nombre completo *</label><input id="full-name" name="fullName" type="text" autocomplete="name" maxlength="360" required aria-describedby="name-help" placeholder="Escribe tu nombre y apellidos">
 <p class="hint" id="name-help">Incluye tu nombre tal como quieres que aparezca, con sus acentos. Debe tener entre 3 y 180 caracteres.</p>
-<dl class="review" aria-label="Datos de tu constancia"><div><dt>Nombre en la constancia</dt><dd id="name-preview">Tu nombre completo</dd></div><div><dt>Fecha de emisión</dt><dd><time id="date-preview"></time></dd></div></dl>
+<dl class="review" aria-label="Datos de tu constancia"><div><dt>Nombre en la constancia</dt><dd id="name-preview">Tu nombre completo</dd></div><div><dt>Fecha de incorporación</dt><dd><time id="date-preview"></time></dd></div></dl>
 <label class="acceptance" for="accept-agreement"><input id="accept-agreement" name="acceptAgreement" type="checkbox" required><span>He leído y acepto todos los términos de participación y uso responsable de recursos de UINIK.</span></label>
 <div class="actions"><button id="generate-certificate" type="submit" disabled>Generar mi constancia <span aria-hidden="true">↓</span></button></div>
 <p id="generation-status" class="status" role="status" aria-live="polite" hidden></p>
 <div id="download-result" class="download-result" hidden><p>Tu constancia está lista. Descarga el PDF y consérvalo.</p><a id="download-certificate" class="button" href="#download-result" download>Descargar constancia en PDF <span aria-hidden="true">↓</span></a></div>
-<p class="privacy-note">Tu nombre y tu aceptación se utilizan únicamente en este navegador para generar la constancia. Esta página no envía ni guarda estos datos en un registro de UINIK.</p>
+<p class="privacy-note">La constancia se genera en tu navegador. El nombre forma parte del enlace de invitación; esta página no crea un registro central de aceptación.</p>
 <noscript><p class="hint">Activa JavaScript para generar tu constancia personalizada.</p></noscript>
 </form>
 </div>
@@ -45,6 +45,9 @@
 <script>
 const membershipForm=document.querySelector('#membership-form');
 const fullNameInput=document.querySelector('#full-name');
+const invitationParams=new URLSearchParams(location.search);
+const invitationName=invitationParams.get('nombre');
+let invitationValid=false;
 const consentInput=document.querySelector('#accept-agreement');
 const generateButton=document.querySelector('#generate-certificate');
 const namePreview=document.querySelector('#name-preview');
@@ -62,7 +65,7 @@ displayDate();
 function normalizedName(){return fullNameInput.value.normalize('NFC').trim().replace(/\s+/g,' ');}
 function validName(value){const length=[...value].length;return length>=3&&length<=180&&/\p{L}/u.test(value)&&!/[\p{Cc}\p{Cf}]/u.test(value);}
 function clearCertificate(){if(certificateUrl){URL.revokeObjectURL(certificateUrl);certificateUrl=null;}downloadResult.hidden=true;downloadLink.removeAttribute('href');}
-function updateAvailability(){generateButton.disabled=busy||!validName(normalizedName())||!consentInput.checked;}
+function updateAvailability(){generateButton.disabled=busy||!invitationValid||!validName(normalizedName())||!consentInput.checked;}
 function setStatus(message,state){generationStatus.textContent=message;generationStatus.dataset.state=state;generationStatus.hidden=false;}
 function invalidate(){nameRevision++;consentInput.checked=false;clearCertificate();generationStatus.hidden=true;namePreview.textContent=normalizedName()||'Tu nombre completo';updateAvailability();}
 fullNameInput.addEventListener('input',invalidate);
@@ -70,8 +73,9 @@ consentInput.addEventListener('change',()=>{clearCertificate();generationStatus.
 function loadPdfLibrary(){if(globalThis.PDFLib)return Promise.resolve();if(pdfLibraryPromise)return pdfLibraryPromise;pdfLibraryPromise=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/membership/pdf-lib.min.js';script.onload=()=>{if(globalThis.PDFLib)resolve();else{pdfLibraryPromise=null;script.remove();reject(new Error('library'));}};script.onerror=()=>{pdfLibraryPromise=null;script.remove();reject(new Error('library'));};document.head.append(script);});return pdfLibraryPromise;}
 membershipForm.addEventListener('submit',async event=>{
  event.preventDefault();if(busy)return;
+ if(!invitationValid){setStatus('Para continuar, abre el enlace personalizado que recibiste de UINIK.','error');return;}
  const name=normalizedName();if(!validName(name)){fullNameInput.focus();setStatus('Escribe tu nombre completo para continuar.','error');return;}if(!consentInput.checked){consentInput.focus();setStatus('Lee y acepta el acuerdo antes de generar tu constancia.','error');return;}
- const currentDate=mexicoDate();if(currentDate!==issueDate){issueDate=currentDate;displayDate();invalidate();setStatus('La fecha de emisión cambió. Revisa tus datos y vuelve a aceptar el acuerdo.','error');return;}
+ const currentDate=mexicoDate();if(currentDate!==issueDate){issueDate=currentDate;displayDate();invalidate();setStatus('La fecha de incorporación cambió. Revisa tus datos y vuelve a aceptar el acuerdo.','error');return;}
  clearCertificate();const revision=nameRevision;busy=true;updateAvailability();generateButton.textContent='Generando tu constancia…';setStatus('Estamos preparando tu PDF personalizado.','pending');
  try{
   await loadPdfLibrary();const {createMembershipPdf}=await import('/membership/member-certificate.mjs');const bytes=await createMembershipPdf({fullName:name,date:issueDate,language:certificateLanguage});
@@ -81,6 +85,11 @@ membershipForm.addEventListener('submit',async event=>{
  finally{busy=false;generateButton.innerHTML='Generar mi constancia <span aria-hidden="true">↓</span>';updateAvailability();}
 });
 addEventListener('pagehide',()=>{if(certificateUrl)URL.revokeObjectURL(certificateUrl);});
+if(invitationName!==null){
+ const candidate=invitationName.normalize('NFC').trim().replace(/\s+/g,' ');
+ if(validName(candidate)){invitationValid=true;fullNameInput.value=candidate;fullNameInput.dispatchEvent(new Event('input',{bubbles:true}));}
+}
+if(!invitationValid){fullNameInput.disabled=true;consentInput.disabled=true;setStatus('Para continuar, abre el enlace personalizado que recibiste de UINIK. Si el enlace no incluye tu nombre correctamente, solicita una nueva invitación.','error');}
 updateAvailability();
 </script>
 </body></html>
