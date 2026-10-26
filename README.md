@@ -18,7 +18,7 @@ La página nosotros.html cuenta el origen de UINIK y el paso de organización me
 
 Nuestra presencia en el mundo incluye México, Yucatán, España, Londres (Reino Unido), Argentina y Colombia. El mapa SVG incluye una ampliación de México y se puede desplazar horizontalmente en pantallas pequeñas. Los límites se conservan en public/maps; scripts/create-presence-map.mjs permite regenerar presence.svg. El SVG está integrado en index.html: si se regenera, hay que sustituir también el SVG de la sección presencia antes de compilar. Fuentes de límites: https://github.com/johan/world.geo.json y https://github.com/angelnmara/geojson.
 
-Nuestros aliados muestra los seis logotipos aportados por el usuario. Los PNG originales están en public/partners y sus copias integradas en index.html evitan depender de enlaces externos durante la visita. Penn Climate y Northeastern se muestran sobre fondo oscuro para conservar el contraste de sus textos blancos.
+Nuestros aliados muestra los siete logotipos aportados por el usuario. Los PNG originales están en public/partners y sus copias integradas en index.html evitan depender de enlaces externos durante la visita. Penn Climate y Northeastern se muestran sobre fondo oscuro para conservar el contraste de sus textos blancos.
 
 La sección Contáctanos enlaza al formulario de participa.html. El destinatario se configura únicamente en el código del formulario, sin mostrar la dirección en los textos del sitio. El formulario valida los campos y prepara un correo mediante mailto: el visitante debe enviarlo desde su aplicación de correo. Incluye vista del mensaje y opción de copiarlo. No hay backend de envío ni almacenamiento de solicitudes.
 

@@ -6,7 +6,7 @@ La portada es index.html; nosotros.html presenta la historia y el propósito, y 
 
 La portada sigue el orden: presentación, qué es UINIK, áreas, proyectos, comunidad, fotos de actividades, presencia internacional, aliados, participación, Discord y contacto. El catálogo conserva los 50 registros del Word, sin cifras de participantes, en fichas tipo paper con referencia interna, área, título y resumen. No se añaden autores, fechas ni identificadores de publicaciones inexistentes. Las fotografías quedan pendientes de recibir.
 
-El mapa usa naranja #e85b3b para México, España, Argentina y Colombia, una marca en Londres y naranja intenso #a32c19 para Yucatán. Una ampliación de México permite ver el estado. Los seis logos de aliados mantienen sus colores originales, en tarjetas de tres columnas (dos o una en móvil); los logos con texto blanco usan fondo oscuro.
+El mapa usa naranja #e85b3b para México, España, Argentina y Colombia, una marca en Londres y naranja intenso #a32c19 para Yucatán. Una ampliación de México permite ver el estado. Los siete logos de aliados mantienen sus colores originales, en tarjetas de tres columnas (dos o una en móvil); los logos con texto blanco usan fondo oscuro.
 
 El logo no tiene lema y el pie no incluye un UINIK de gran tamaño. El correo del destinatario solo se utiliza en el código del formulario; las llamadas a contacto enlazan a ese formulario.
 
