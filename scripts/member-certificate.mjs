@@ -147,12 +147,18 @@ export async function createMembershipPdf({ fullName, date, language = 'es' } = 
  const width = page.getWidth();
  const left = 59.5, usable = width - left * 2;
  const ink = PDFLib.rgb(0,0,0);
- const top = 596, bottom = 245;
- const text = [content.intro,name+',',content.joining.replace('{date}',issued.display),...content.paragraphs,content.closing].join(' ');
+ const top = 610, bottom = 245;
+ const paragraphs = [
+  [content.intro,name+',',content.joining.replace('{date}',issued.display)].join(' '),
+  ...content.paragraphs,
+  content.closing,
+ ];
  let layout;
  for (let size = 12; size >= 9.5; size -= .25) {
-  const leading=size*1.35,lines=wrapText(text,regular,size,usable);
-  if(lines.length*leading<=top-bottom){layout={size,leading,lines};break;}
+  const leading=size*1.35,gap=7;
+  const blocks=paragraphs.map(text=>wrapText(text,regular,size,usable));
+  const height=blocks.reduce((sum,lines)=>sum+lines.length*leading,0)+(blocks.length-1)*gap;
+  if(height<=top-bottom){layout={size,leading,gap,blocks};break;}
  }
  if (!layout) throw fail('text-overflow', 'The certificate text does not fit this name.');
  const drawLines = (lines, y, font, size, leading, color = ink) => {
@@ -162,7 +168,11 @@ export async function createMembershipPdf({ fullName, date, language = 'es' } = 
  // Date is right-aligned above the existing orange rule; signatures remain untouched.
  const dateSize = layout.size;
  page.drawText(issued.display, { x:width-left-regular.widthOfTextAtSize(issued.display,dateSize), y:686, size:dateSize, font:regular, color:ink });
- const y = drawLines(layout.lines, top, regular, layout.size, layout.leading);
+ let y=top;
+ for(let i=0;i<layout.blocks.length;i++){
+  y=drawLines(layout.blocks[i],y,regular,layout.size,layout.leading);
+  if(i<layout.blocks.length-1)y-=layout.gap;
+ }
  if (y < bottom - 1) throw fail('text-overflow', 'The certificate text exceeds its safe area.');
  pdf.setTitle(content.title);
  pdf.setSubject(content.title + ': ' + name);
