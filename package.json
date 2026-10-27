@@ -6,9 +6,18 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build-static.mjs",
-    "preview": "node scripts/serve.mjs --production"
+    "preview": "node scripts/serve.mjs --production",
+    "db:validate": "node scripts/database-cli.mjs validate",
+    "db:export": "node scripts/database-cli.mjs export",
+    "db:import": "node scripts/database-cli.mjs import",
+    "db:backup": "node scripts/database-cli.mjs backup",
+    "db:query": "node scripts/database-cli.mjs query",
+    "db:test": "node scripts/test-database.mjs"
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "sql.js": "1.15.2"
   }
 }

@@ -12,7 +12,13 @@ Sitio editorial bilingüe, con inglés como idioma inicial y español disponible
 
 ## Idiomas y edición
 
-El contenido fuente en español está en locales/es/index.html, locales/es/nosotros.html, locales/es/participa.html y locales/es/afiliados.html. Las traducciones están en scripts/translations.mjs, scripts/project-translations.mjs y scripts/membership-translations.mjs. scripts/localize.mjs genera las páginas inglesas en la raíz y las españolas en es/. No editar esas salidas directamente: npm run build las regenera desde las fuentes. El generador del mapa también actualiza la fuente en locales/es.
+El contenido fuente en español está en locales/es/index.html, locales/es/nosotros.html, locales/es/participa.html y locales/es/afiliados.html. Las traducciones generales están en scripts/translations.mjs y scripts/membership-translations.mjs; los proyectos y sus traducciones se leen de data/uinik.sqlite. scripts/localize.mjs genera las páginas inglesas en la raíz y las españolas en es/. No editar esas salidas directamente: npm run build las regenera desde las fuentes y la base. El generador del mapa también actualiza la fuente en locales/es.
+
+## Base de datos
+
+`data/uinik.sqlite` es una base SQLite portable, versionada en GitHub, con el catálogo público y estructura de integrantes, stack, proyectos y publicaciones. La compilación valida su integridad y relaciones antes de generar la web. El archivo no se publica en dist. No contiene credenciales ni registros privados; las tablas de perfiles y publicaciones están vacías. Ver [data/README.md](data/README.md) para importación, exportación, respaldos y migración al VPS.
+
+Comandos: `npm run db:validate`, `npm run db:test`, `npm run db:export -- ruta.json`, `npm run db:import -- ruta.json` y `npm run db:backup -- ruta.sqlite`. El registro y la edición de perfiles desde la web requieren un backend futuro; GitHub versiona los cambios confirmados manualmente, no las interacciones de visitantes.
 
 La primera visita a la raíz usa inglés. El selector EN / Español aparece en las cuatro páginas, conserva la página, los parámetros del formulario y el ancla al cambiar de idioma, y guarda la preferencia en localStorage. Si el almacenamiento está deshabilitado, los enlaces de cada idioma siguen funcionando. Los textos estáticos, catálogo, mapa, diálogos, accesibilidad y estados del formulario tienen versiones en ambos idiomas.
 

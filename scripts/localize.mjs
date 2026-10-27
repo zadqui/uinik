@@ -1,10 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { copy } from './translations.mjs';
-import { categories, projects } from './project-translations.mjs';
+import { loadCatalogues } from './database.mjs';
 import { membershipCopy } from './membership-translations.mjs';
 import { pageRoute } from './clean-routes.mjs';
 
 const pages=['index.html','nosotros.html','participa.html','afiliados.html'];
+const catalogues=await loadCatalogues();
 const spacing={' personas':' people',' de ':' of ',' propuestas':' projects',' (abre en otra pestaña)':' (opens in a new tab)',' con el logo de UINIK sobre fondo naranja':' with the UINIK logo on an orange background'};
 const dictionary=[...copy,...membershipCopy].filter(([key])=>key!=='de').map(([key,value])=>[key,spacing[key]??value]).sort((a,b)=>b[0].length-a[0].length);
 function translate(html){
@@ -12,10 +13,7 @@ function translate(html){
  html=html.replace(/data:[^\s"']+/g,value=>`__ASSET_${assets.push(value)-1}__`);
  const catalog=html.match(/const projectCatalog=(\[[\s\S]*?\]);/);
  if(catalog){
-  const records=JSON.parse(catalog[1]).map(p=>{
-   if(!projects[p.id]||!categories[p.category])throw Error('Missing project translation: '+p.id+' '+p.category);
-   return{...p,title:projects[p.id][0],description:projects[p.id][1],category:categories[p.category]};
-  });
+  const records=catalogues.en;
   html=html.replace(catalog[0],'__PROJECT_CATALOG__');
   assets.push('const projectCatalog='+JSON.stringify(records)+';');
  }
@@ -47,6 +45,11 @@ function decorate(html,page,lang){
 for(const page of pages){
  const sourceUrl=new URL('../locales/es/'+page,import.meta.url);
  let source=await readFile(sourceUrl,'utf8');
+ if(page==='index.html'){
+  const marker='const projectCatalog=__UINIK_PROJECT_CATALOG__;';
+  if(!source.includes(marker))throw Error('The homepage must load its project catalogue from data/uinik.sqlite.');
+  source=source.replace(marker,'const projectCatalog='+JSON.stringify(catalogues.es)+';');
+ }
  source=source.replace('tama?os de equipo son estimaciones seg?n','tamaños de equipo son estimaciones según').replaceAll(' ? ilustrativa',' · ilustrativa');
  await writeFile(new URL('../'+page,import.meta.url),decorate(translate(source),page,'en'));
  await writeFile(new URL('../es/'+page,import.meta.url),decorate(source,page,'es'));

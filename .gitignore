@@ -4,3 +4,10 @@ dist/
 artifacts/
 tmp/pdfs/
 output/pdf/
+data/backups/
+data/*.tmp
+data/*.lock
+data/private/
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
