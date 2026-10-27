@@ -12,7 +12,8 @@
     "db:import": "node scripts/database-cli.mjs import",
     "db:backup": "node scripts/database-cli.mjs backup",
     "db:query": "node scripts/database-cli.mjs query",
-    "db:test": "node scripts/test-database.mjs"
+    "db:test": "node scripts/test-database.mjs",
+    "portal:test": "node scripts/test-portal.mjs"
   },
   "engines": {
     "node": ">=18"

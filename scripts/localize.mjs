@@ -2,12 +2,13 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { copy } from './translations.mjs';
 import { loadCatalogues } from './database.mjs';
 import { membershipCopy } from './membership-translations.mjs';
-import { pageRoute } from './clean-routes.mjs';
+import { portalCopy } from './portal-translations.mjs';
+import { pageRoute,pageFiles } from './clean-routes.mjs';
 
-const pages=['index.html','nosotros.html','participa.html','afiliados.html'];
+const pages=pageFiles;
 const catalogues=await loadCatalogues();
 const spacing={' personas':' people',' de ':' of ',' propuestas':' projects',' (abre en otra pestaña)':' (opens in a new tab)',' con el logo de UINIK sobre fondo naranja':' with the UINIK logo on an orange background'};
-const dictionary=[...copy,...membershipCopy].filter(([key])=>key!=='de').map(([key,value])=>[key,spacing[key]??value]).sort((a,b)=>b[0].length-a[0].length);
+const dictionary=[...copy,...membershipCopy,...portalCopy].filter(([key])=>key!=='de').map(([key,value])=>[key,spacing[key]??value]).sort((a,b)=>b[0].length-a[0].length);
 function translate(html){
  const assets=[];
  html=html.replace(/data:[^\s"']+/g,value=>`__ASSET_${assets.push(value)-1}__`);
@@ -33,7 +34,7 @@ function decorate(html,page,lang){
  const nav=`<nav class="language-switch" aria-label="${label}"><a href="${routes.en}" data-language="en" lang="en"${lang==='en'?' aria-current="true"':''}>EN</a><span aria-hidden="true">/</span><a href="${routes.es}" data-language="es" lang="es"${lang==='es'?' aria-current="true"':''}>Español</a></nav>`;
  html=html.replace('</header>',nav+'</header>');
  html=html.replace('</style>',`\n.language-switch{display:flex;align-items:center;gap:8px;flex-shrink:0;font:14px 'DM Sans',Arial,sans-serif;margin-left:18px;color:#eee7da}.language-switch a{padding:7px 2px;text-decoration:none;opacity:.65}.language-switch a[aria-current]{opacity:1;border-bottom:2px solid #e85b3b}.language-switch a:hover{opacity:1}.site-nav{gap:12px}.nav-links{margin-left:auto}.language-switch span{opacity:.4}@media(min-width:761px) and (max-width:1300px){.nav-links{gap:10px;font-size:11px}.nav-cta{padding:10px}.language-switch{font-size:12px;margin-left:6px}header.site-nav{padding-left:3%;padding-right:3%}}@media(max-width:760px){.language-switch{font-size:13px;margin-left:0}.site-nav .menu{margin-left:auto}.site-nav .logo{margin-right:auto}header.site-nav{gap:12px}header>a.text-link{font-size:12px;max-width:130px}}\n</style>`);
- html=html.replace(/href="(index|nosotros|participa|afiliados)\.html(?=["?#])/g,(_,name)=>'href="'+pageRoute(name+'.html',lang));
+ html=html.replace(/href="(index|nosotros|participa|afiliados|portal)\.html(?=["?#])/g,(_,name)=>'href="'+pageRoute(name+'.html',lang));
  const styleBlocks=[];
  html=html.replace(/<style>[\s\S]*?<\/style>/g,value=>`__STYLE_${styleBlocks.push(value.replace(/[\u2190\u2191\u2192\u2193\u2197\u2198\u2196\u2199]/g,''))-1}__`);
  const arrows={'\u2190':'arrow-left','\u2191':'arrow-up','\u2192':'arrow-right','\u2193':'arrow-down','\u2197':'arrow-up-right','\u2198':'arrow-down-right','\u2196':'arrow-up-right','\u2199':'arrow-down-right'};

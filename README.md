@@ -5,14 +5,14 @@ Sitio editorial bilingüe, con inglés como idioma inicial y español disponible
 ## Desarrollo y publicación
 
 - Abrir index.html directamente en un navegador, o ejecutar npm run dev.
-- Ejecutar npm run build para generar y validar las cuatro páginas en inglés y sus versiones en español dentro de dist/es, además de copiar la merch y los recursos para constancias.
+- Ejecutar npm run build para generar y validar las cinco páginas en inglés y sus versiones en español dentro de dist/es, además de copiar la merch y los recursos para constancias.
 - Ejecutar npm run preview para revisar dist en http://127.0.0.1:5173.
 - Se puede indicar otro puerto con -- --port 5179.
 - En Render: comando npm ci && npm run build; directorio de publicación dist.
 
 ## Idiomas y edición
 
-El contenido fuente en español está en locales/es/index.html, locales/es/nosotros.html, locales/es/participa.html y locales/es/afiliados.html. Las traducciones generales están en scripts/translations.mjs y scripts/membership-translations.mjs; los proyectos y sus traducciones se leen de data/uinik.sqlite. scripts/localize.mjs genera las páginas inglesas en la raíz y las españolas en es/. No editar esas salidas directamente: npm run build las regenera desde las fuentes y la base. El generador del mapa también actualiza la fuente en locales/es.
+El contenido fuente en español está en locales/es/index.html, locales/es/nosotros.html, locales/es/participa.html, locales/es/afiliados.html y locales/es/portal.html. Las traducciones generales están en scripts/translations.mjs, scripts/membership-translations.mjs y scripts/portal-translations.mjs; los proyectos y sus traducciones se leen de data/uinik.sqlite. scripts/localize.mjs genera las páginas inglesas en la raíz y las españolas en es/. No editar esas salidas directamente: npm run build las regenera desde las fuentes y la base. El generador del mapa también actualiza la fuente en locales/es.
 
 ## Base de datos
 
@@ -20,7 +20,17 @@ El contenido fuente en español está en locales/es/index.html, locales/es/nosot
 
 Comandos: `npm run db:validate`, `npm run db:test`, `npm run db:export -- ruta.json`, `npm run db:import -- ruta.json` y `npm run db:backup -- ruta.sqlite`. El registro y la edición de perfiles desde la web requieren un backend futuro; GitHub versiona los cambios confirmados manualmente, no las interacciones de visitantes.
 
-La primera visita a la raíz usa inglés. El selector EN / Español aparece en las cuatro páginas, conserva la página, los parámetros del formulario y el ancla al cambiar de idioma, y guarda la preferencia en localStorage. Si el almacenamiento está deshabilitado, los enlaces de cada idioma siguen funcionando. Los textos estáticos, catálogo, mapa, diálogos, accesibilidad y estados del formulario tienen versiones en ambos idiomas.
+La primera visita a la raíz usa inglés. El selector EN / Español aparece en las cinco páginas, conserva la página, los parámetros del formulario y el ancla al cambiar de idioma, y guarda la preferencia en localStorage. Si el almacenamiento está deshabilitado, los enlaces de cada idioma siguen funcionando. Los textos estáticos, catálogo, mapa, diálogos, accesibilidad y estados del formulario tienen versiones en ambos idiomas.
+
+## Maqueta del portal
+
+`/portal/` y `/es/portal/` permiten revisar las vistas de acceso, invitación, activación, perfil y panel, con el estilo de UINIK. El prototipo no está enlazado desde la web pública y contiene un aviso permanente de que está pendiente de producción. Las vistas son accesibles libremente para revisión: no constituyen un portal protegido.
+
+El perfil y las habilidades se previsualizan solo en memoria. No se solicitan contraseñas, no se envían invitaciones, no se crean cuentas ni sesiones y no se guardan datos del formulario. No se usa el catálogo ilustrativo para simular asignaciones personales reales. La preferencia general de idioma sigue usando localStorage como en el resto del sitio, sin almacenar información del perfil.
+
+Ejecutar `npm run portal:test` después de compilar para comprobar vistas, perfil, habilidades, reinicio y ausencia de transmisión/persistencia del formulario. El flujo existente de Afiliados mediante `?nombre=` se conserva por decisión del usuario.
+
+La etapa de backend queda documentada en [docs/PORTAL_BACKEND_HANDOFF.md](docs/PORTAL_BACKEND_HANDOFF.md): ciclo de invitaciones, verificación de identidad, autorización, sesiones/CSRF, datos persistentes, pruebas y decisiones de revisión pendientes. No se han añadido endpoints de autenticación, tablas de credenciales ni cambios en servicios de Render.
 
 La navegación usa rutas sin extensión: /, /nosotros/, /participa/, /afiliados/ y sus equivalentes bajo /es/. El build genera directorios con index.html para servirlos en hosting estático. Los enlaces antiguos con .html se normalizan a su ruta limpia, conservando parámetros y anclas; el servidor local emite una redirección 308. Los archivos .html de la raíz permanecen como fuentes generadas y compatibilidad, no como destinos de navegación.
 

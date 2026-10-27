@@ -1,4 +1,4 @@
-export const pageFiles=['index.html','nosotros.html','participa.html','afiliados.html'];
+export const pageFiles=['index.html','nosotros.html','participa.html','afiliados.html','portal.html'];
 
 export function pageRoute(page,lang='en'){
  const base=lang==='es'?'/es/':'/';

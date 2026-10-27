@@ -60,4 +60,4 @@ npm run db:backup -- data/backups/uinik-before-migration.sqlite
 4. Mantener respaldos independientes de Git para la base en uso. Si más adelante se añaden datos privados, estos deben mantenerse fuera del repositorio; `data/private/` está ignorado para ese propósito.
 5. Conectar el backend de autenticación y los permisos antes de permitir cambios desde cuentas de usuario.
 
-El sitio actual es estático: genera su catálogo desde esta base al compilar y no publica el archivo SQLite dentro de `dist`. Todavía no hay inicio de sesión ni escritura de perfiles desde la web. GitHub conserva las versiones que se confirmen mediante commit/push; no recibe automáticamente los cambios de visitantes.
+El sitio actual es estático: genera su catálogo desde esta base al compilar y no publica el archivo SQLite dentro de `dist`. Existe una maqueta del portal en /portal/, pero todavía no hay inicio de sesión real ni escritura de perfiles desde la web. GitHub conserva las versiones que se confirmen mediante commit/push; no recibe automáticamente los cambios de visitantes. La futura integración de datos privados y autenticación requiere revisión según docs/PORTAL_BACKEND_HANDOFF.md.
