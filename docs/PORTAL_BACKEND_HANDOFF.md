@@ -6,7 +6,11 @@ Maqueta estática bilingüe en `/portal/` y `/es/portal/`, con las vistas de acc
 
 Los datos de prueba viven únicamente en el DOM y se pierden al recargar. No hay almacenamiento de credenciales, tokens de invitación, sesiones, cookies de acceso, envío de invitaciones ni escritura de perfiles. Los botones recorren vistas de ejemplo. No hay cambios en la configuración de servicios de Render.
 
-El flujo actual de Afiliados mediante `?nombre=` permanece separado y sin cambios, según la preferencia del usuario. Ese parámetro no verifica identidad ni autoriza una cuenta. Su constancia local no se debe importar como prueba de activación o aceptación registrada.
+Afiliados conserva su invitación mediante `?nombre=` y su consentimiento. Al pulsar la descarga de la constancia, abre el portal de prueba después de iniciar la descarga nativa. Transfiere únicamente el nombre mediante el fragmento de la URL; no es un token. Ese nombre no verifica identidad ni autoriza una cuenta. La constancia local no se debe importar como prueba de activación o aceptación registrada.
+
+La prueba sugiere un identificador `primerNombrePrimerApellido@uinik.org` y muestra una clave de demostración pública basada en el nombre. No crea buzones ni compara, guarda o autentica contraseñas. Para producción, UINIK entregará contraseñas temporales seguras e independientes del nombre, con cambio posterior. Los apellidos compuestos, nombres de estructura distinta y colisiones requerirán revisión administrativa; no se debe asignar un identificador real solo mediante esta heurística.
+
+El perfil de prueba incluye institución, área, grado, semestre, ubicación, resumen, habilidades, ORCID, contacto, redes y publicaciones declaradas por línea. Ofrece cinco avatares SVG originales inspirados en la referencia del usuario. Todos los datos se representan como texto y se pierden al recargar; no están guardados en la base SQLite ni disponibles para otros integrantes.
 
 ## Flujo aprobado para la etapa de backend
 

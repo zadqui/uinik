@@ -39,7 +39,7 @@
 <label class="acceptance" for="accept-agreement"><input id="accept-agreement" name="acceptAgreement" type="checkbox" required><span>He leído y acepto todos los términos de participación y uso responsable de recursos de UINIK.</span></label>
 <div class="actions"><button id="generate-certificate" type="submit" disabled>Generar mi constancia <span aria-hidden="true"><img class="ui-arrow" src="/icons/arrow-down.svg" alt="" aria-hidden="true" width="20" height="20"></span></button></div>
 <p id="generation-status" class="status" role="status" aria-live="polite" hidden></p>
-<div id="download-result" class="download-result" hidden><p>Tu constancia está lista. Descarga el PDF y consérvalo.</p><a id="download-certificate" class="button" href="#download-result" download>Descargar constancia en PDF <span aria-hidden="true"><img class="ui-arrow" src="/icons/arrow-down.svg" alt="" aria-hidden="true" width="20" height="20"></span></a></div>
+<div id="download-result" class="download-result" hidden><p>Tu constancia está lista. Descarga el PDF y consérvalo. Al pulsar descargar, se abrirá el acceso de prueba a tu perfil. Si el navegador bloquea la descarga, vuelve a esta página para intentarlo otra vez.</p><a id="download-certificate" class="button" href="#download-result" download>Descargar constancia en PDF <span aria-hidden="true"><img class="ui-arrow" src="/icons/arrow-down.svg" alt="" aria-hidden="true" width="20" height="20"></span></a></div>
 <p class="privacy-note">La constancia se genera en tu navegador. El nombre forma parte del enlace de invitación; esta página no crea un registro central de aceptación.</p>
 <noscript><p class="hint">Activa JavaScript para generar tu constancia personalizada.</p></noscript>
 </form>
@@ -60,6 +60,12 @@ const generationStatus=document.querySelector('#generation-status');
 const downloadResult=document.querySelector('#download-result');
 const downloadLink=document.querySelector('#download-certificate');
 const certificateLanguage=document.documentElement.lang==='es'?'es':'en';
+downloadLink.addEventListener('click',event=>{
+ if(!certificateUrl||busy||!consentInput.checked){event.preventDefault();return;}
+ const destination=(certificateLanguage==='es'?'/es/portal/':'/portal/')+'#nombre='+encodeURIComponent(normalizedName());
+ // Let the browser begin its native PDF download before opening the trial portal.
+ setTimeout(()=>location.assign(destination),1200);
+});
 let certificateUrl=null,busy=false,nameRevision=0,pdfLibraryPromise=null;
 function mexicoDate(){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Mexico_City',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const value=type=>parts.find(part=>part.type===type).value;return value('year')+'-'+value('month')+'-'+value('day');}
 let issueDate=mexicoDate();

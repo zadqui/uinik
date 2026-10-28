@@ -13,7 +13,7 @@ createServer(async (req, res) => {
  if(page&&path!==page.canonical){res.writeHead(308,{Location:page.canonical+requestUrl.search});res.end();return;}
  const productImage = /^\/merch\/(camiseta|polo|taza|alfombrilla)\.png$/.test(path);
  const membershipAsset = /^\/membership\/[a-zA-Z0-9_.-]+\.(pdf|mjs|js|ttf|woff2?)$/.test(path);
- const iconAsset=/^\/icons\/arrow-(left|right|up|down|up-right|down-right)\.svg$/.test(path);
+ const iconAsset=/^\/icons\/(arrow-(left|right|up|down|up-right|down-right)|member-[1-5])\.svg$/.test(path);
  const brandAsset=path==='/images/logouinikblanco.png';
  if (!productImage && !membershipAsset && !iconAsset && !brandAsset && !page) {res.writeHead(404);res.end('Not found');return;}
  if (!['GET','HEAD'].includes(req.method)) {res.writeHead(405,{Allow:'GET, HEAD'});res.end();return;}
